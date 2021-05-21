@@ -523,10 +523,19 @@ function commit_transaction(session::Session)
         disconnect(session, true)
         session.transaction = nothing
     end
-    bookmark = metadata["bookmark"]
-    session.bookmarks_in = [bookmark]
-    session.bookmark_out = bookmark
-    return bookmark
+    # when running on Neo4j 4.2.6 the transaction bookmarks of form
+    # FB:kcwQKwWzFfsvRnK2CBkFcw22fgaQ
+    # when these bookmarks are provided for a next write transaction
+    # the server returns an error:
+    # "Supplied bookmark [FB:kcwQKwWzFfsvRnK2CBkFcw22fgaQ] does not conform to pattern neo4j:bookmark:v1:tx"
+    # An immediate workaround is to disable bookmark untill is this database driver reaches parity with Python 4.2 driver
+    # supporting Bolt protocol 4x (right now it is using protocol 3.0
+    
+    # bookmark = metadata["bookmark"]
+    # session.bookmarks_in = [bookmark]
+    # session.bookmark_out = bookmark
+    # return bookmark
+    return nothing
 end
 
 # Session ------------------------- #
